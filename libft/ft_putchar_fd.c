@@ -1,18 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   ft_putchar_fd.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/19 15:20:30 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/20 13:52:06 by tle-rhun         ###   ########.fr       */
+/*   Created: 2025/11/10 09:43:58 by tle-rhun          #+#    #+#             */
+/*   Updated: 2025/11/13 12:35:11 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-# include "./libft/libft.h"
+#include "libft.h"
+
+void	ft_putchar_fd(char c, int fd)
+{
+	write(fd, &c, 1);
+}
+
+/* int	main(void)
+{
+	char c = 'a';
+	ft_putchar_fd(c, 1);
+	return (0);
+} */

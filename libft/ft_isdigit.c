@@ -1,18 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   ft_isdigit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/19 15:20:30 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/20 13:52:06 by tle-rhun         ###   ########.fr       */
+/*   Created: 2025/11/05 17:59:11 by tle-rhun          #+#    #+#             */
+/*   Updated: 2025/11/18 14:03:03 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-# include "./libft/libft.h"
+int	ft_isdigit(int nb)
+{
+	if (47 < nb && nb < 58)
+		return (1);
+	else
+		return (0);
+}
+/* #include <ctype.h>
+#include <stdio.h>
+int main(void)
+{
+	int result = ft_isdigit('a');
+	printf("%d", result);
+	return (0);
+} */

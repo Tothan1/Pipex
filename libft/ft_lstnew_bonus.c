@@ -1,18 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   ft_lstnew_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/19 15:20:30 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/20 13:52:06 by tle-rhun         ###   ########.fr       */
+/*   Created: 2025/11/18 17:15:00 by tle-rhun          #+#    #+#             */
+/*   Updated: 2025/12/19 19:20:20 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-# include "./libft/libft.h"
+#include "libft.h"
+
+t_list	*ft_lstnew(int	content)
+{
+	t_list	*newlst;
+
+	newlst = malloc(sizeof (t_list));
+	if (!newlst)
+		return (NULL);
+	newlst->content = content;
+	newlst->next = NULL;
+	return (newlst);
+}
+
+/* #include <stdio.h>
+int main (void)
+{
+	int content = 12;
+	t_list * lst= ft_lstnew(&content);
+	printf("newlst:%d", *(int *)(lst->content));
+	free(lst);
+	return (0);
+} */

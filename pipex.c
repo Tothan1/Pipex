@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/20 12:12:14 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/20 15:22:07 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,23 +64,29 @@
 //   return (0);
 // }
 
-int	main(int ac, char **av, char **env)
+int	main(int ac, char **av, char **envp)
 {
 	// pid_t pid1;
 	// int status;
+	char **path;
+	char *full_path;
 	int nb_tab_path = 0;
 	if(ac == 2)
 	{
-		printf("av1:%s\n", av[1]);
-		while (env[nb_tab_path][0]!= 'P')
+		while (envp[nb_tab_path][0]!= 'P')
 			nb_tab_path++;
-		while (env[nb_tab_path][i])
+		path = ft_split(&envp[nb_tab_path][5], ':');
+		nb_tab_path = 0;
+		while (path[nb_tab_path])
 		{
-			/* code */
+			full_path =ft_strjoin(path[nb_tab_path], ft_strjoin("/", av[1]));
+			if(access(full_path, X_OK) == 0)
+				execve(full_path, &av[1], envp);
+			nb_tab_path++;
 		}
+		if(access(full_path, X_OK) != 0)
+			perror("bash");
 		
-		if(env[nb_tab_path][0]== 'P')
-			printf ("test:%s", env[nb_tab_path]);
 	}
 	// pid1 = fork(); 
     // if (argc > 1)

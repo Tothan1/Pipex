@@ -1,18 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   ft_striteri.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/19 15:20:30 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/20 13:52:06 by tle-rhun         ###   ########.fr       */
+/*   Created: 2025/11/14 14:38:48 by tle-rhun          #+#    #+#             */
+/*   Updated: 2025/11/18 13:49:25 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-# include "./libft/libft.h"
+#include "libft.h"
+
+void	ft_striteri(char *s, void (*f)(unsigned int, char*))
+{
+	unsigned int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		f(i, &s[i]);
+		i++;
+	}
+}
+
+/* #include <stdio.h>
+static void	fonction(unsigned int i, char *c)
+{
+	c[i] = c[i] + i;
+}
+int main (void)
+{
+	char s[]= "aaaaa";
+	ft_striteri(s,fonction);
+	printf("test1: %s\n", s);
+	return(0);
+} */
