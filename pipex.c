@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/20 15:22:07 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/20 18:26:40 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,20 +68,28 @@ int	main(int ac, char **av, char **envp)
 {
 	// pid_t pid1;
 	// int status;
+	// int pipefd[2];
 	char **path;
+	char **argv;
 	char *full_path;
+	char *part_path;
 	int nb_tab_path = 0;
 	if(ac == 2)
 	{
-		while (envp[nb_tab_path][0]!= 'P')
+		while (ft_strncmp(envp[nb_tab_path], "PATH=", 5))
 			nb_tab_path++;
+		// printf("%s\n", envp[nb_tab_path]);
 		path = ft_split(&envp[nb_tab_path][5], ':');
 		nb_tab_path = 0;
+		argv = ft_split(av[1],' ');
 		while (path[nb_tab_path])
 		{
-			full_path =ft_strjoin(path[nb_tab_path], ft_strjoin("/", av[1]));
+			part_path = ft_strjoin("/", argv[0]);
+			full_path = ft_strjoin(path[nb_tab_path], part_path);
+			free(part_path);
 			if(access(full_path, X_OK) == 0)
-				execve(full_path, &av[1], envp);
+				execve(full_path, argv, envp);
+			free(full_path);
 			nb_tab_path++;
 		}
 		if(access(full_path, X_OK) != 0)
