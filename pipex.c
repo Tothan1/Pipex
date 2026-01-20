@@ -6,52 +6,105 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/19 17:00:48 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/20 12:12:14 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-
-
-
 #include <stdio.h>
 
-int main(void)
-{
-    pid_t pid;
-
-    printf("Fork ici.\n");
-    pid = fork();
-    if (pid == -1)
-    {
-        // Si fork renvoie -1, il y a eu une erreur !
-        return (1);
-    }
-    printf("\nFork reussi !\n");
-    if (pid == 0)
-    {
-        // La valeur de retour de fork
-        // est 0, ce qui veut dire qu'on est
-        // dans le processus fils
-        printf("Fils : Je suis le fils, mon pid interne est %d.\n", pid);
-        sleep(3); // Attendre 1 seconde.
-        printf("Fils : Termine !\n");
-    }
-    else if (pid > 0)
-    {
-        // La valeur de retour de fork
-        // est différente de 0, ce qui veut dire
-        // qu'on est dans le processus père
-        printf("Pere : Je suis le pere, le pid de mon fils est %d.\n", pid);
-        printf("Père : Termine !\n");
-    }
-    return(0);
-}
-// int main (void)
+// int main(void)
 // {
-// 	int p= 5;
+//     pid_t pid;
 
-// 	if (pipe(p) < 0)
-//      	exit(1);
+//     printf("Fork ici.\n");
+//     pid = fork();
+//     if (pid == -1)
+//     {
+//         // Si fork renvoie -1, il y a eu une erreur !
+//         return (1);
+//     }
+//     printf("\nFork reussi !\n");
+//     if (pid == 0)
+//     {
+//         // La valeur de retour de fork
+//         // est 0, ce qui veut dire qu'on est
+//         // dans le processus fils
+//         printf("Fils : Je suis le fils, mon pid interne est %d.\n", pid);
+//         sleep(3); // Attendre 1 seconde.
+//         printf("Fils : Termine !\n");
+//     }
+//     else if (pid > 0)
+//     {
+//         // La valeur de retour de fork
+//         // est différente de 0, ce qui veut dire
+//         // qu'on est dans le processus père
+//         printf("Pere : Je suis le pere, le pid de mon fils est %d.\n", pid);
+//         printf("Père : Termine !\n");
+//     }
+//     return(0);
 // }
+
+// int
+// main(void)
+// {
+//   pid_t          pid;
+
+//   if ((pid = fork()) == -1)
+//     {
+//       perror("fork");
+//       return (1);
+//     }
+//   else if (pid == 0)
+//     printf("Je suis le fils, et mon pid = %d\n", getpid());
+//   else
+//     printf("Je suis le pere, et mon pid = %d. Le pid de mon fils = %d\n",
+	// getpid(), pid);
+
+//   return (0);
+// }
+
+int	main(int ac, char **av, char **env)
+{
+	// pid_t pid1;
+	// int status;
+	int nb_tab_path = 0;
+	if(ac == 2)
+	{
+		printf("av1:%s\n", av[1]);
+		while (env[nb_tab_path][0]!= 'P')
+			nb_tab_path++;
+		while (env[nb_tab_path][i])
+		{
+			/* code */
+		}
+		
+		if(env[nb_tab_path][0]== 'P')
+			printf ("test:%s", env[nb_tab_path]);
+	}
+	// pid1 = fork(); 
+    // if (argc > 1)
+	// {
+	// 	if (pid1 == -1)
+	// 	{
+	// 		perror("fork");
+	// 		return (1);
+	// 	}
+	// 	/* Si pid == 0, alors on est dans le process fils. */
+	// 	else if (pid1 == 0)
+	// 	{
+	// 		if (execve(argv[1], argv + 1, env) == -1)
+	// 			perror("execve");
+	// 		return (1);
+	// 			/* On termine le fils même si execve fail parce qu'on veut voir que le pid du pere*/
+	// 	}
+	// 	/* Sinon, dans le pere. */
+	// 	else
+	// 		waitpid(pid1, &status, 0); /* Oui,
+	// 			il faudrait vérifier la valeur de retour... */
+	// }
+
+	// printf("My pid is: %d\n", getpid());
+
+	return (0);
+}

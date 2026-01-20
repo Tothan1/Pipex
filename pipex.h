@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 15:20:30 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/19 17:06:32 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/20 10:40:06 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,3 +14,4 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <sys/types.h>
