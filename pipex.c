@@ -6,13 +6,62 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/20 18:26:40 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/21 15:59:33 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include <stdio.h>
 
+
+void	error(void)
+{
+	perror("bash");
+	exit(EXIT_FAILURE);
+}
+
+void	exec_command(char **av,char **envp)
+{
+	char	**path;
+	char	**argv;
+	char	*full_path;
+	char	*part_path;
+	int		nb_tab_path;
+	
+	nb_tab_path = 0;
+	while (ft_strncmp(envp[nb_tab_path], "PATH=", 5))
+	nb_tab_path++;
+	// printf("%s\n", envp[nb_tab_path]);
+	path = ft_split(&envp[nb_tab_path][5], ':');
+	nb_tab_path = 0;
+	argv = ft_split(av[2], ' ');
+	while (path[nb_tab_path])
+	{
+		part_path = ft_strjoin("/", argv[0]);
+		full_path = ft_strjoin(path[nb_tab_path], part_path);
+		free(part_path);
+		if (access(full_path, X_OK) == 0)
+		execve(full_path, argv, envp);
+		free(full_path);
+		nb_tab_path++;
+	}
+	if (access(full_path, X_OK) != 0)
+		printf("test");
+}
+
+int	main(int ac, char **av, char **envp)
+{
+	// pid_t pid1;
+	// int status;
+	// int pipefd[2];
+	if (open(av[1], O_WRONLY)> 0 && open(av[4], O_WRONLY)> 0 && ac == 5)
+	{
+		exec_command(av, envp);
+	}
+	else
+		error();
+	return (0);
+}
 // int main(void)
 // {
 //     pid_t pid;
@@ -59,66 +108,33 @@
 //     printf("Je suis le fils, et mon pid = %d\n", getpid());
 //   else
 //     printf("Je suis le pere, et mon pid = %d. Le pid de mon fils = %d\n",
-	// getpid(), pid);
+// getpid(), pid);
 
 //   return (0);
 // }
 
-int	main(int ac, char **av, char **envp)
-{
-	// pid_t pid1;
-	// int status;
-	// int pipefd[2];
-	char **path;
-	char **argv;
-	char *full_path;
-	char *part_path;
-	int nb_tab_path = 0;
-	if(ac == 2)
-	{
-		while (ft_strncmp(envp[nb_tab_path], "PATH=", 5))
-			nb_tab_path++;
-		// printf("%s\n", envp[nb_tab_path]);
-		path = ft_split(&envp[nb_tab_path][5], ':');
-		nb_tab_path = 0;
-		argv = ft_split(av[1],' ');
-		while (path[nb_tab_path])
-		{
-			part_path = ft_strjoin("/", argv[0]);
-			full_path = ft_strjoin(path[nb_tab_path], part_path);
-			free(part_path);
-			if(access(full_path, X_OK) == 0)
-				execve(full_path, argv, envp);
-			free(full_path);
-			nb_tab_path++;
-		}
-		if(access(full_path, X_OK) != 0)
-			perror("bash");
-		
-	}
-	// pid1 = fork(); 
-    // if (argc > 1)
-	// {
+
+
+
+
+// pid1 = fork();
+// if (argc > 1)
+// {
 	// 	if (pid1 == -1)
 	// 	{
-	// 		perror("fork");
-	// 		return (1);
-	// 	}
-	// 	/* Si pid == 0, alors on est dans le process fils. */
-	// 	else if (pid1 == 0)
-	// 	{
-	// 		if (execve(argv[1], argv + 1, env) == -1)
-	// 			perror("execve");
-	// 		return (1);
-	// 			/* On termine le fils même si execve fail parce qu'on veut voir que le pid du pere*/
-	// 	}
-	// 	/* Sinon, dans le pere. */
-	// 	else
-	// 		waitpid(pid1, &status, 0); /* Oui,
-	// 			il faudrait vérifier la valeur de retour... */
-	// }
-
-	// printf("My pid is: %d\n", getpid());
-
-	return (0);
-}
+		// 		perror("fork");
+		// 		return (1);
+		// 	}
+		// 	/* Si pid == 0, alors on est dans le process fils. */
+		// 	else if (pid1 == 0)
+		// 	{
+			// 		if (execve(argv[1], argv + 1, env) == -1)
+			// 			perror("execve");
+			// 		return (1);
+			// 			/* On termine le fils même si execve fail parce qu'on veut voir que le pid du pere*/
+			// 	}
+			// 	/* Sinon, dans le pere. */
+			// 	else
+			// 		waitpid(pid1, &status, 0); /* Oui,
+			// 			il faudrait vérifier la valeur de retour... */
+			// printf("My pid is: %d\n", getpid());
