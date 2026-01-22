@@ -6,13 +6,12 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/22 18:48:05 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/22 18:52:37 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include <stdio.h>
-
 
 void	error(void)
 {
@@ -20,15 +19,14 @@ void	error(void)
 	exit(EXIT_FAILURE);
 }
 
-void	exec_command(char **av,char **envp, int cmd)
+void	exec_command(char **av, char **envp, int cmd)
 {
 	char	**path;
 	char	**argv;
 	char	*full_path;
 	char	*part_path;
 	int		nb_tab_path;
-	
-	
+
 	nb_tab_path = 0;
 	while (ft_strncmp(envp[nb_tab_path], "PATH=", 5))
 		nb_tab_path++;
@@ -48,12 +46,10 @@ void	exec_command(char **av,char **envp, int cmd)
 		free(full_path);
 }
 
-
-void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid)
+void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid, int status)
 {
-	int fd1;
-	int fd2;
-	int status;
+	int	fd1;
+	int	fd2;
 
 	pid[0] = fork();
 	fd1 = open(av[1], O_RDONLY);
@@ -83,15 +79,18 @@ void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid)
 
 int	main(int ac, char **av, char **envp)
 {
-	pid_t pid[2];
-	int pipefd[2];
+	pid_t	pid[2];
+	int		status;
+	int		pipefd[2];
+
+	status = 0;
 	if (pipe(pipefd) == -1)
 	{
 		perror("pipe");
-		return 1;
+		return (1);
 	}
-	if ( ac == 5 && access(av[1], R_OK) == 0 && access(av[4], W_OK) == 0)
-		mainv2(av, envp, pipefd, pid);
+	if (ac == 5 && access(av[1], R_OK) == 0 && access(av[4], W_OK) == 0)
+		mainv2(av, envp, pipefd, pid, status);
 	else
 		error();
 	return (0);
@@ -129,8 +128,6 @@ int	main(int ac, char **av, char **envp)
 //     return(0);
 // }
 
-
-
 // int
 // main(void)
 // {
@@ -150,28 +147,24 @@ int	main(int ac, char **av, char **envp)
 //   return (0);
 // }
 
-
-
-
-
 // pid = fork();
 // if (argc > 1)
 // {
-	// 	if (pid == -1)
-	// 	{
-		// 		perror("fork");
-		// 		return (1);
-		// 	}
-		// 	/* Si pid == 0, alors on est dans le process fils. */
-		// 	else if (pid == 0)
-		// 	{
-			// 		if (execve(argv[1], argv + 1, env) == -1)
-			// 			perror("execve");
-			// 		return (1);
-			// 			/* On termine le fils même si execve fail parce qu'on veut voir que le pid du pere*/
-			// 	}
-			// 	/* Sinon, dans le pere. */
-			// 	else
-			// 		waitpid(pid, &status, 0); /* Oui,
-			// 			il faudrait vérifier la valeur de retour... */
-			// printf("My pid is: %d\n", getpid());
+// 	if (pid == -1)
+// 	{
+// 		perror("fork");
+// 		return (1);
+// 	}
+// 	/* Si pid == 0, alors on est dans le process fils. */
+// 	else if (pid == 0)
+// 	{
+// 		if (execve(argv[1], argv + 1, env) == -1)
+// 			perror("execve");
+// 		return (1);
+// 			/* On termine le fils même si execve fail parce qu'on veut voir que le pid du pere*/
+// 	}
+// 	/* Sinon, dans le pere. */
+// 	else
+// 		waitpid(pid, &status, 0); /* Oui,
+// 			il faudrait vérifier la valeur de retour... */
+// printf("My pid is: %d\n", getpid());
