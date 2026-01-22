@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/21 16:01:40 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/22 11:06:49 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	error(void)
 	exit(EXIT_FAILURE);
 }
 
-void	exec_command(char **av,char **envp)
+void	exec_command(char **av,char **envp, int fd)
 {
 	char	**path;
 	char	**argv;
@@ -28,10 +28,11 @@ void	exec_command(char **av,char **envp)
 	char	*part_path;
 	int		nb_tab_path;
 	
+	
+	dup2(fd, 0);
 	nb_tab_path = 0;
 	while (ft_strncmp(envp[nb_tab_path], "PATH=", 5))
 	nb_tab_path++;
-	// printf("%s\n", envp[nb_tab_path]);
 	path = ft_split(&envp[nb_tab_path][5], ':');
 	nb_tab_path = 0;
 	argv = ft_split(av[2], ' ');
@@ -41,12 +42,13 @@ void	exec_command(char **av,char **envp)
 		full_path = ft_strjoin(path[nb_tab_path], part_path);
 		free(part_path);
 		if (access(full_path, X_OK) == 0)
-		execve(full_path, argv, envp);
+			execve(full_path, argv, envp);
 		free(full_path);
 		nb_tab_path++;
 	}
 	if (access(full_path, X_OK) != 0)
 		printf("test");
+	close(fd);
 }
 
 int	main(int ac, char **av, char **envp)
@@ -54,9 +56,12 @@ int	main(int ac, char **av, char **envp)
 	// pid_t pid1;
 	// int status;
 	// int pipefd[2];
-	if (open(av[1], O_WRONLY)> 0 && open(av[4], O_WRONLY)> 0 && ac == 5)
+int fd1;
+
+if (access(av[1], R_OK) == 0 && access(av[4], R_OK|W_OK) == 0 && ac == 5)
 	{
-		exec_command(av, envp);
+		fd1 = open( av[1], O_RDONLY);
+		exec_command(av, envp, fd1);
 	}
 	else
 		error();
