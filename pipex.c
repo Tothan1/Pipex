@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/22 11:06:49 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/22 16:58:25 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	error(void)
 	exit(EXIT_FAILURE);
 }
 
-void	exec_command(char **av,char **envp, int fd)
+void	exec_command(char **av,char **envp, int cmd)
 {
 	char	**path;
 	char	**argv;
@@ -29,13 +29,12 @@ void	exec_command(char **av,char **envp, int fd)
 	int		nb_tab_path;
 	
 	
-	dup2(fd, 0);
 	nb_tab_path = 0;
 	while (ft_strncmp(envp[nb_tab_path], "PATH=", 5))
-	nb_tab_path++;
+		nb_tab_path++;
 	path = ft_split(&envp[nb_tab_path][5], ':');
 	nb_tab_path = 0;
-	argv = ft_split(av[2], ' ');
+	argv = ft_split(av[cmd], ' ');
 	while (path[nb_tab_path])
 	{
 		part_path = ft_strjoin("/", argv[0]);
@@ -43,26 +42,50 @@ void	exec_command(char **av,char **envp, int fd)
 		free(part_path);
 		if (access(full_path, X_OK) == 0)
 			execve(full_path, argv, envp);
-		free(full_path);
 		nb_tab_path++;
-	}
+		}
 	if (access(full_path, X_OK) != 0)
-		printf("test");
-	close(fd);
+		free(full_path);
+}
+
+
+void	mainv2(char **av, char **envp, int *pipefd, pid_t pid1)
+{
+	int fd1;
+	int fd2;
+	// int status;
+	if (pid1 == 0)
+	{
+		fd1 = open(av[1], O_RDONLY);
+		dup2(fd1, 0);
+		close(pipefd[0]);
+		dup2(pipefd[1], 1);
+		exec_command(av, envp, 2);
+		close(fd1);
+		close(pipefd[1]);
+	}
+	else
+	{
+		// waitpid(pid1, &status, 0);
+		fd2 = open(av[4], O_RDONLY);
+		close(pipefd[1]);
+		dup2(pipefd[0], 0);
+		dup2(1, 1);
+		exec_command(av, envp, 3);
+		close(pipefd[0]);
+		close(fd2);
+	}
 }
 
 int	main(int ac, char **av, char **envp)
 {
-	// pid_t pid1;
-	// int status;
-	// int pipefd[2];
-int fd1;
-
-if (access(av[1], R_OK) == 0 && access(av[4], R_OK|W_OK) == 0 && ac == 5)
-	{
-		fd1 = open( av[1], O_RDONLY);
-		exec_command(av, envp, fd1);
-	}
+	pid_t pid1;
+	int pipefd[2];
+	pipe(pipefd);
+     pid1 = fork();
+	
+	if (access(av[1], R_OK) == 0 && access(av[4], R_OK|W_OK) == 0 && ac == 5)
+		mainv2(av, envp, pipefd, pid1);
 	else
 		error();
 	return (0);
@@ -82,7 +105,7 @@ if (access(av[1], R_OK) == 0 && access(av[4], R_OK|W_OK) == 0 && ac == 5)
 //     if (pid == 0)
 //     {
 //         // La valeur de retour de fork
-//         // est 0, ce qui veut dire qu'on est
+//         // est 0, ce qui veut dire qu'on est close(pipe_fd[0]);
 //         // dans le processus fils
 //         printf("Fils : Je suis le fils, mon pid interne est %d.\n", pid);
 //         sleep(3); // Attendre 1 seconde.
@@ -98,6 +121,8 @@ if (access(av[1], R_OK) == 0 && access(av[4], R_OK|W_OK) == 0 && ac == 5)
 //     }
 //     return(0);
 // }
+
+
 
 // int
 // main(void)
