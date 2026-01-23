@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/23 16:03:33 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/23 16:49:34 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,10 @@ void	error(char *msg_error, int nb_exit)
 {
 	// if(nb_exit != 1)
 	// {
-		msg_error = ft_strjoin("bash: ", msg_error);
-		ft_putstr_fd(msg_error, 2);
+	msg_error = ft_strjoin("bash: ", msg_error);
+	ft_putstr_fd(msg_error, 2);
 	// }
+	free(msg_error);
 	exit(nb_exit);
 }
 
@@ -47,14 +48,17 @@ void	exec_command(char **av, char **envp, int cmd)
 		nb_tab_path++;
 	}
 	free(full_path);
-		error(ft_strjoin("command not found: ", argv[0]), 127);
+	error(ft_strjoin( argv[0], "command not found: "), 127);
 }
 
-void	pipe_command(int fd, int *pipefd, int nb_dup1, int nb_dup2)
+void	child_process(int fd, int *pipefd, int nb_dup1, int nb_dup2, char *av)
 {
+	char	*msg_error;
 	if (fd == -1)
 	{
-		perror("bash");
+		msg_error = ft_strjoin("bash: ", av);
+		perror(msg_error);
+		free(msg_error);
 		exit(EXIT_FAILURE);
 	}
 	close(pipefd[nb_dup1]);
@@ -66,27 +70,27 @@ void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid)
 {
 	int	fd1;
 	int	fd2;
-	int		status;
+	int	status;
 
 	pid[0] = fork();
 	fd1 = open(av[1], O_RDONLY);
 	if (pid[0] == 0)
 	{
-		pipe_command(fd1, pipefd, 0, 1);
+		child_process(fd1, pipefd, 0, 1, av[1]);
 		exec_command(av, envp, 2);
 	}
 	pid[1] = fork();
-	if (pid[0] < 0 || pid [1] < 0)
+	if (pid[0] < 0 || pid[1] < 0)
 		error("Fork failed\n", 1);
+	waitpid(pid[0], &status, 0);
 	fd2 = open(av[4], O_WRONLY);
 	if (pid[1] == 0)
 	{
-		pipe_command(fd2, pipefd, 1, 0);
+		child_process(fd2, pipefd, 1, 0, av[4]);
 		exec_command(av, envp, 3);
 	}
 	close(pipefd[0]);
 	close(pipefd[1]);
-	waitpid(pid[0], &status, 0);
 	waitpid(pid[1], &status, 0);
 	close(fd1);
 	close(fd2);
