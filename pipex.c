@@ -6,17 +6,21 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/23 09:27:54 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/23 16:03:33 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include <stdio.h>
 
-void	error(void)
+void	error(char *msg_error, int nb_exit)
 {
-	perror("bash");
-	exit(EXIT_FAILURE);
+	// if(nb_exit != 1)
+	// {
+		msg_error = ft_strjoin("bash: ", msg_error);
+		ft_putstr_fd(msg_error, 2);
+	// }
+	exit(nb_exit);
 }
 
 void	exec_command(char **av, char **envp, int cmd)
@@ -33,7 +37,7 @@ void	exec_command(char **av, char **envp, int cmd)
 	path = ft_split(&envp[nb_tab_path][5], ':');
 	nb_tab_path = 0;
 	argv = ft_split(av[cmd], ' ');
-	while (path[nb_tab_path])
+	while (path[nb_tab_path] != NULL)
 	{
 		part_path = ft_strjoin("/", argv[0]);
 		full_path = ft_strjoin(path[nb_tab_path], part_path);
@@ -42,8 +46,8 @@ void	exec_command(char **av, char **envp, int cmd)
 			execve(full_path, argv, envp);
 		nb_tab_path++;
 	}
-	if (access(full_path, X_OK) != 0)
-		free(full_path);
+	free(full_path);
+		error(ft_strjoin("command not found: ", argv[0]), 127);
 }
 
 void	pipe_command(int fd, int *pipefd, int nb_dup1, int nb_dup2)
@@ -72,6 +76,8 @@ void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid)
 		exec_command(av, envp, 2);
 	}
 	pid[1] = fork();
+	if (pid[0] < 0 || pid [1] < 0)
+		error("Fork failed\n", 1);
 	fd2 = open(av[4], O_WRONLY);
 	if (pid[1] == 0)
 	{
@@ -93,10 +99,10 @@ int	main(int ac, char **av, char **envp)
 
 	if (pipe(pipefd) == -1)
 		return (perror("pipe"), 1);
-	if (ac == 5 && access(av[1], R_OK) == 0 && access(av[4], W_OK) == 0)
+	if (ac == 5)
 		mainv2(av, envp, pipefd, pid);
 	else
-		error();
+		error("", 1);
 	return (0);
 }
 
