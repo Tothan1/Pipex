@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/23 20:15:44 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/23 20:17:18 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,7 @@ void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid)
 	waitpid(pid[1], &status, 0);
 	close(fd[0]);
 	close(fd[1]);
-	if (WIFEXITED(status))
-		exit(WEXITSTATUS(status));
+	exit(WEXITSTATUS(status));
 }
 
 int	main(int ac, char **av, char **envp)
