@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/23 16:50:49 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/23 20:15:44 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,13 @@ void	exec_command(char **av, char **envp, int cmd)
 		nb_tab_path++;
 	}
 	free(full_path);
-	error(ft_strjoin( argv[0], "command not found: "), 127);
+	error(ft_strjoin(argv[0], "command not found: "), 127);
 }
 
 void	child_process(int fd, int *pipefd, int nb_dup1, int nb_dup2, char *av)
 {
 	char	*msg_error;
+
 	if (fd == -1)
 	{
 		msg_error = ft_strjoin("bash: ", av);
@@ -68,32 +69,33 @@ void	child_process(int fd, int *pipefd, int nb_dup1, int nb_dup2, char *av)
 
 void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid)
 {
-	int	fd1;
-	int	fd2;
+	int	fd[2];
 	int	status;
 
 	pid[0] = fork();
-	fd1 = open(av[1], O_RDONLY);
+	fd[0] = open(av[1], O_RDONLY);
 	if (pid[0] == 0)
 	{
-		child_process(fd1, pipefd, 0, 1, av[1]);
+		child_process(fd[0], pipefd, 0, 1, av[1]);
 		exec_command(av, envp, 2);
 	}
 	pid[1] = fork();
 	if (pid[0] < 0 || pid[1] < 0)
 		error("Fork failed\n", 1);
-	waitpid(pid[0], &status, 0);
-	fd2 = open(av[4], O_WRONLY);
+	fd[1] = open(av[4], O_WRONLY | O_TRUNC | O_CREAT, 0644);
 	if (pid[1] == 0)
 	{
-		child_process(fd2, pipefd, 1, 0, av[4]);
+		child_process(fd[1], pipefd, 1, 0, av[4]);
 		exec_command(av, envp, 3);
 	}
 	close(pipefd[0]);
 	close(pipefd[1]);
+	waitpid(pid[0], NULL, 0);
 	waitpid(pid[1], &status, 0);
-	close(fd1);
-	close(fd2);
+	close(fd[0]);
+	close(fd[1]);
+	if (WIFEXITED(status))
+		exit(WEXITSTATUS(status));
 }
 
 int	main(int ac, char **av, char **envp)
