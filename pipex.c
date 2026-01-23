@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/22 18:52:37 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/23 09:27:54 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,27 +46,36 @@ void	exec_command(char **av, char **envp, int cmd)
 		free(full_path);
 }
 
-void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid, int status)
+void	pipe_command(int fd, int *pipefd, int nb_dup1, int nb_dup2)
+{
+	if (fd == -1)
+	{
+		perror("bash");
+		exit(EXIT_FAILURE);
+	}
+	close(pipefd[nb_dup1]);
+	dup2(fd, nb_dup1);
+	dup2(pipefd[nb_dup2], nb_dup2);
+}
+
+void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid)
 {
 	int	fd1;
 	int	fd2;
+	int		status;
 
 	pid[0] = fork();
 	fd1 = open(av[1], O_RDONLY);
 	if (pid[0] == 0)
 	{
-		close(pipefd[0]);
-		dup2(fd1, 0);
-		dup2(pipefd[1], 1);
+		pipe_command(fd1, pipefd, 0, 1);
 		exec_command(av, envp, 2);
 	}
 	pid[1] = fork();
 	fd2 = open(av[4], O_WRONLY);
 	if (pid[1] == 0)
 	{
-		close(pipefd[1]);
-		dup2(pipefd[0], 0);
-		dup2(fd2, 1);
+		pipe_command(fd2, pipefd, 1, 0);
 		exec_command(av, envp, 3);
 	}
 	close(pipefd[0]);
@@ -80,17 +89,12 @@ void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid, int status)
 int	main(int ac, char **av, char **envp)
 {
 	pid_t	pid[2];
-	int		status;
 	int		pipefd[2];
 
-	status = 0;
 	if (pipe(pipefd) == -1)
-	{
-		perror("pipe");
-		return (1);
-	}
+		return (perror("pipe"), 1);
 	if (ac == 5 && access(av[1], R_OK) == 0 && access(av[4], W_OK) == 0)
-		mainv2(av, envp, pipefd, pid, status);
+		mainv2(av, envp, pipefd, pid);
 	else
 		error();
 	return (0);

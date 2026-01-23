@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 16:37:30 by tle-rhun          #+#    #+#             */
-/*   Updated: 2025/11/13 16:32:24 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/23 09:20:02 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 void	ft_putnbr_fd(int n, int fd)
 {
 	long	nb;
-	int		div;
 	int		mod;
 
 	nb = n;
@@ -30,10 +29,7 @@ void	ft_putnbr_fd(int n, int fd)
 		write(fd, "-", 1);
 	}
 	if (nb > 9)
-	{
-		div = nb / 10;
 		ft_putnbr_fd(nb / 10, fd);
-	}
 	mod = nb % 10;
 	mod = mod + '0';
 	write(fd, &mod, 1);

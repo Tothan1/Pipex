@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 18:22:21 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/14 16:00:12 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/23 09:19:06 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,9 +83,7 @@ char	**ft_split(char const *s, char c)
 {
 	char	**bigtab;
 	int		i;
-	int		e;
 
-	e = 0;
 	i = 0;
 	bigtab = (char **)malloc(sizeof(char *) * (ft_nbtab(s, c) + 1));
 	if (bigtab == NULL)
