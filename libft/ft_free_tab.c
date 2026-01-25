@@ -1,35 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstnew_bonus.c                                  :+:      :+:    :+:   */
+/*   ft_free_tab.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/18 17:15:00 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/25 11:29:32 by tle-rhun         ###   ########.fr       */
+/*   Created: 2026/01/25 13:12:08 by tle-rhun          #+#    #+#             */
+/*   Updated: 2026/01/25 13:17:36 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-t_list	*ft_lstnew(int content)
+void	ft_free_tab(char **tab)
 {
-	t_list	*newlst;
+	int	i;
 
-	newlst = malloc(sizeof(t_list));
-	if (!newlst)
-		return (NULL);
-	newlst->content = content;
-	newlst->next = NULL;
-	return (newlst);
+	i = 0;
+	while (tab[i] != NULL)
+	{
+		free(tab[i]);
+		i++;
+	}
+	free(tab);
 }
-
-/* #include <stdio.h>
-int main (void)
-{
-	int content = 12;
-	t_list * lst= ft_lstnew(&content);
-	printf("newlst:%d", *(int *)(lst->content));
-	free(lst);
-	return (0);
-} */

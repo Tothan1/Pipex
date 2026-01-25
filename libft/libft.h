@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 17:00:12 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/20 14:13:51 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/25 13:20:23 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,12 @@ char	*ft_strnstr(const char *big, const char *little, size_t len);
 char	*ft_strdup(const char *s);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_super_strjoin(int size, char **strs, char *sep);
 char	*ft_strtrim(char const *s1, const char *set);
 char	**ft_split(char const *s, char c);
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 void	ft_striteri(char *s, void (*f)(unsigned int, char*));
-
+void	ft_free_tab(char **tab);
 /* bonus*/
 typedef struct s_list
 {

@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/23 20:17:18 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/25 13:25:25 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,21 +15,18 @@
 
 void	error(char *msg_error, int nb_exit)
 {
-	// if(nb_exit != 1)
-	// {
 	msg_error = ft_strjoin("bash: ", msg_error);
 	ft_putstr_fd(msg_error, 2);
-	// }
 	free(msg_error);
 	exit(nb_exit);
 }
 
-void	exec_command(char **av, char **envp, int cmd)
+void	exec_command(char *av, char **envp)
 {
 	char	**path;
 	char	**argv;
 	char	*full_path;
-	char	*part_path;
+	char	*msg_error;
 	int		nb_tab_path;
 
 	nb_tab_path = 0;
@@ -37,149 +34,83 @@ void	exec_command(char **av, char **envp, int cmd)
 		nb_tab_path++;
 	path = ft_split(&envp[nb_tab_path][5], ':');
 	nb_tab_path = 0;
-	argv = ft_split(av[cmd], ' ');
+	argv = ft_split(av, ' ');
+	if(access(av, X_OK) == 0)
+		execve(av, argv, envp);
 	while (path[nb_tab_path] != NULL)
 	{
-		part_path = ft_strjoin("/", argv[0]);
-		full_path = ft_strjoin(path[nb_tab_path], part_path);
-		free(part_path);
+		full_path = ft_super_strjoin(3, path[nb_tab_path], "/", argv[0], "");
 		if (access(full_path, X_OK) == 0)
 			execve(full_path, argv, envp);
 		nb_tab_path++;
+		free(full_path);
 	}
-	free(full_path);
-	error(ft_strjoin(argv[0], "command not found: "), 127);
+	msg_error = ft_strjoin(argv[0], "command not found: ");
+	ft_free_tab(argv);
+	ft_free_tab(path);
+	error(msg_error, 127);
 }
 
-void	child_process(int fd, int *pipefd, int nb_dup1, int nb_dup2, char *av)
+void	child_process(t_liste fd, int *pipefd, char **av, char **envp)
 {
 	char	*msg_error;
 
-	if (fd == -1)
+	if (fd.fd == -1)
 	{
-		msg_error = ft_strjoin("bash: ", av);
+		msg_error = ft_strjoin("bash: ", av[fd.nb_tab]);
 		perror(msg_error);
 		free(msg_error);
 		exit(EXIT_FAILURE);
 	}
-	close(pipefd[nb_dup1]);
-	dup2(fd, nb_dup1);
-	dup2(pipefd[nb_dup2], nb_dup2);
+	close(pipefd[fd.nb_dup1]);
+	dup2(fd.fd, fd.nb_dup1);
+	dup2(pipefd[fd.nb_dup2], fd.nb_dup2);
+	exec_command(av[fd.cmd], envp);
 }
 
-void	mainv2(char **av, char **envp, int *pipefd, pid_t *pid)
+void	mainv2(char **av, char **envp, t_liste fd1, t_liste fd2)
 {
-	int	fd[2];
-	int	status;
+	int		status;
+	pid_t	pid[2];
+	int		pipefd[2];
 
+	if (pipe(pipefd) == -1)
+		error ("Pipe failed\n", 1);
 	pid[0] = fork();
-	fd[0] = open(av[1], O_RDONLY);
+	fd1.fd = open(av[1], O_RDONLY);
 	if (pid[0] == 0)
-	{
-		child_process(fd[0], pipefd, 0, 1, av[1]);
-		exec_command(av, envp, 2);
-	}
+		child_process(fd1, pipefd, av, envp);
 	pid[1] = fork();
 	if (pid[0] < 0 || pid[1] < 0)
 		error("Fork failed\n", 1);
-	fd[1] = open(av[4], O_WRONLY | O_TRUNC | O_CREAT, 0644);
+	fd2.fd = open(av[4], O_WRONLY | O_TRUNC | O_CREAT, 0644);
 	if (pid[1] == 0)
-	{
-		child_process(fd[1], pipefd, 1, 0, av[4]);
-		exec_command(av, envp, 3);
-	}
+		child_process(fd2, pipefd, av, envp);
 	close(pipefd[0]);
 	close(pipefd[1]);
 	waitpid(pid[0], NULL, 0);
 	waitpid(pid[1], &status, 0);
-	close(fd[0]);
-	close(fd[1]);
+	close(fd1.fd);
+	close(fd2.fd);
 	exit(WEXITSTATUS(status));
 }
 
 int	main(int ac, char **av, char **envp)
 {
-	pid_t	pid[2];
-	int		pipefd[2];
+	t_liste	fd1;
+	t_liste	fd2;
 
-	if (pipe(pipefd) == -1)
-		return (perror("pipe"), 1);
+	fd1.nb_dup1 = 0;
+	fd1.nb_dup2 = 1;
+	fd2.nb_dup1 = 1;
+	fd2.nb_dup2 = 0;
+	fd1.cmd = 2;
+	fd2.cmd = 3;
+	fd1.nb_tab = 1;
+	fd2.nb_tab = 4;
 	if (ac == 5)
-		mainv2(av, envp, pipefd, pid);
+		mainv2(av, envp, fd1, fd2);
 	else
 		error("", 1);
 	return (0);
 }
-
-// int main(void)
-// {
-//     pid_t pid;
-
-//     printf("Fork ici.\n");
-//     pid = fork();
-//     if (pid == -1)
-//     {
-//         // Si fork renvoie -1, il y a eu une erreur !
-//         return (1);
-//     }
-//     printf("\nFork reussi !\n");
-//     if (pid == 0)
-//     {
-//         // La valeur de retour de fork
-//         // est 0, ce qui veut dire qu'on est close(pipe_fd[0]);
-//         // dans le processus fils
-//         printf("Fils : Je suis le fils, mon pid interne est %d.\n", pid);
-//         sleep(3); // Attendre 1 seconde.
-//         printf("Fils : Termine !\n");
-//     }
-//     else if (pid > 0)
-//     {
-//         // La valeur de retour de fork
-//         // est différente de 0, ce qui veut dire
-//         // qu'on est dans le processus père
-//         printf("Pere : Je suis le pere, le pid de mon fils est %d.\n", pid);
-//         printf("Père : Termine !\n");
-//     }
-//     return(0);
-// }
-
-// int
-// main(void)
-// {
-//   pid_t          pid;
-
-//   if ((pid = fork()) == -1)
-//     {
-//       perror("fork");
-//       return (1);
-//     }
-//   else if (pid == 0)
-//     printf("Je suis le fils, et mon pid = %d\n", getpid());
-//   else
-//     printf("Je suis le pere, et mon pid = %d. Le pid de mon fils = %d\n",
-// getpid(), pid);
-
-//   return (0);
-// }
-
-// pid = fork();
-// if (argc > 1)
-// {
-// 	if (pid == -1)
-// 	{
-// 		perror("fork");
-// 		return (1);
-// 	}
-// 	/* Si pid == 0, alors on est dans le process fils. */
-// 	else if (pid == 0)
-// 	{
-// 		if (execve(argv[1], argv + 1, env) == -1)
-// 			perror("execve");
-// 		return (1);
-// 			/* On termine le fils même si execve fail parce qu'on veut voir que le pid du pere*/
-// 	}
-// 	/* Sinon, dans le pere. */
-// 	else
-// 		waitpid(pid, &status, 0); /* Oui,
-// 			il faudrait vérifier la valeur de retour... */
-// printf("My pid is: %d\n", getpid());
