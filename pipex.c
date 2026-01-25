@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/25 13:25:25 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/25 13:28:50 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,11 @@ void	error(char *msg_error, int nb_exit)
 	exit(nb_exit);
 }
 
-void	exec_command(char *av, char **envp)
+void	exec_command(char *av, char **envp, char *msg_error)
 {
 	char	**path;
 	char	**argv;
 	char	*full_path;
-	char	*msg_error;
 	int		nb_tab_path;
 
 	nb_tab_path = 0;
@@ -65,7 +64,7 @@ void	child_process(t_liste fd, int *pipefd, char **av, char **envp)
 	close(pipefd[fd.nb_dup1]);
 	dup2(fd.fd, fd.nb_dup1);
 	dup2(pipefd[fd.nb_dup2], fd.nb_dup2);
-	exec_command(av[fd.cmd], envp);
+	exec_command(av[fd.cmd], envp, msg_error);
 }
 
 void	mainv2(char **av, char **envp, t_liste fd1, t_liste fd2)
