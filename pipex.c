@@ -6,12 +6,11 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:06:07 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/25 13:28:50 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/26 11:13:12 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h>
 
 void	error(char *msg_error, int nb_exit)
 {
@@ -34,17 +33,17 @@ void	exec_command(char *av, char **envp, char *msg_error)
 	path = ft_split(&envp[nb_tab_path][5], ':');
 	nb_tab_path = 0;
 	argv = ft_split(av, ' ');
-	if(access(av, X_OK) == 0)
-		execve(av, argv, envp);
+	if (access(argv[0], X_OK) == 0)
+		execve(argv[0], argv, envp);
 	while (path[nb_tab_path] != NULL)
 	{
-		full_path = ft_super_strjoin(3, path[nb_tab_path], "/", argv[0], "");
+		full_path = ft_strjoin3(path[nb_tab_path], "/", argv[0]);
 		if (access(full_path, X_OK) == 0)
 			execve(full_path, argv, envp);
 		nb_tab_path++;
 		free(full_path);
 	}
-	msg_error = ft_strjoin(argv[0], "command not found: ");
+	msg_error = ft_strjoin(argv[0], ": command not found\n");
 	ft_free_tab(argv);
 	ft_free_tab(path);
 	error(msg_error, 127);
@@ -54,6 +53,7 @@ void	child_process(t_liste fd, int *pipefd, char **av, char **envp)
 {
 	char	*msg_error;
 
+	msg_error = NULL;
 	if (fd.fd == -1)
 	{
 		msg_error = ft_strjoin("bash: ", av[fd.nb_tab]);
@@ -74,7 +74,7 @@ void	mainv2(char **av, char **envp, t_liste fd1, t_liste fd2)
 	int		pipefd[2];
 
 	if (pipe(pipefd) == -1)
-		error ("Pipe failed\n", 1);
+		error("Pipe failed\n", 1);
 	pid[0] = fork();
 	fd1.fd = open(av[1], O_RDONLY);
 	if (pid[0] == 0)

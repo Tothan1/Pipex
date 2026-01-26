@@ -6,7 +6,7 @@
 /*   By: tle-rhun <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 15:20:30 by tle-rhun          #+#    #+#             */
-/*   Updated: 2026/01/25 11:41:45 by tle-rhun         ###   ########.fr       */
+/*   Updated: 2026/01/26 11:46:50 by tle-rhun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "./libft/libft.h"
 # include <fcntl.h>
+# include <stdio.h>
 # include <stdlib.h>
 # include <sys/types.h>
 # include <sys/wait.h>
